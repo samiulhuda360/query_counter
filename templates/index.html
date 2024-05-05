@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Scraper</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', path='style.css') }}">
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var form = document.querySelector('form');
+            var table = document.querySelector('table tbody');
+            var downloadButton = document.querySelector('#download-button');
+            var eventSource = new EventSource('/scrape');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                var formData = new FormData(form);
+                fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(function(response) {
+                    console.log('File uploaded successfully');
+                    table.innerHTML = ''; // Clear the table when a new file is uploaded
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                });
+            });
+
+            eventSource.addEventListener('result', function(event) {
+                console.log('Received result event');
+                var data = JSON.parse(event.data);
+                var row = table.insertRow();
+                row.innerHTML = `
+                    <td>${data.url}</td>
+                    <td>${data.keyword}</td>
+                    <td>${data.h1_count}</td>
+                    <td>${data.h2_count}</td>
+                    <td>${data.body_count}</td>
+                `;
+            });
+
+            eventSource.addEventListener('complete', function(event) {
+                console.log('Received complete event');
+                downloadButton.classList.remove('hidden'); // Show the download button when processing is complete
+            });
+
+            eventSource.addEventListener('ping', function(event) {
+                console.log('Received ping event');
+            });
+
+            eventSource.addEventListener('error', function(event) {
+                console.error('EventSource error:', event);
+            });
+
+            downloadButton.addEventListener('click', function() {
+                window.location.href = '/download';
+            });
+        });
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Web Scraper</h1>
+        <form>
+            <input type="file" name="file" class="file-input">
+            <button type="submit" class="submit-button">Upload and Scrape</button>
+        </form>
+        <div class="results">
+            <h2>Scraping Results</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>URL</th>
+                        <th>Keyword</th>
+                        <th>H1 Count</th>
+                        <th>H2 Count</th>
+                        <th>Body Count</th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+            <button id="download-button" class="hidden">Download Results</button>
+        </div>
+    </div>
+</body>
+</html>
