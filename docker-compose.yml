@@ -1,23 +1,21 @@
 version: '3.9'
 services:
   web:
-    build: ./web  # Assuming web-specific Dockerfile is in the 'web' directory
+    build: .
     ports:
       - "8000:8000"
     depends_on:
       - redis
     volumes:
-      - ./web:/app  # Mount only necessary files for the web service
-    # Add healthcheck configuration if needed
+      - .:/app
 
   celery:
-    build: ./celery  # Assuming celery-specific Dockerfile is in the 'celery' directory
+    build: .
     command: celery -A celery_worker worker --loglevel=info --concurrency=1
     depends_on:
       - redis
     volumes:
-      - ./celery:/app  # Mount only necessary files for the celery service
-    # Add healthcheck configuration if needed
+      - .:/app
 
   redis:
     image: redis:alpine
