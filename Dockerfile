@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port on which the FastAPI application will run
-EXPOSE 8000
+EXPOSE 8002
 
 # Run the Celery worker and FastAPI application when the container starts
 CMD celery -A celery_worker worker --loglevel=info --concurrency=1 & uvicorn main:app --host 0.0.0.0 --port 8002
