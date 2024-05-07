@@ -81,7 +81,6 @@ async def scrape_endpoint():
         if not results:
             # If no tasks started, yield a ping event to keep connection alive
             yield "event: ping\ndata: null\n\n".encode()
-            yield "event: complete\ndata: null\n\n".encode()
             return
 
         while True:
@@ -111,7 +110,7 @@ async def scrape_endpoint():
             else:
                 # If no results are available, check if all tasks are completed
                 if all(result.ready() for result in results):
-                    # If all tasks are completed, send the "complete" event and break the loop
+                    # If all tasks are completed, send the "complete" event
                     complete_event = "event: complete\ndata: null\n\n"
                     yield complete_event.encode()
                     break
