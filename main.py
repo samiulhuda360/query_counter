@@ -37,7 +37,7 @@ results = []
 urls = []
 keywords = []
 
-@app.get("/gsc/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 def read_form(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
@@ -68,7 +68,7 @@ async def upload_file(file: UploadFile = File(...)):
 
     return {"message": "File uploaded and processing started"}
 
-@app.get("/scrape")
+@app.get("/gsc/scrape")
 async def scrape_endpoint():
     async def event_generator():
         global urls, keywords
