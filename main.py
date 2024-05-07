@@ -37,7 +37,7 @@ results = []
 urls = []
 keywords = []
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/gsc/", response_class=HTMLResponse)
 def read_form(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
