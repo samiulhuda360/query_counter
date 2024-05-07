@@ -43,6 +43,11 @@ def read_form(request: Request):
 
 @app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
+    # Clean up the temporary files from previous runs
+    for file_name in os.listdir(TEMP_DIR):
+        file_path = os.path.join(TEMP_DIR, file_name)
+        os.remove(file_path)
+
     # Save the uploaded file
     with open("uploaded_file.xlsx", "wb") as buffer:
         buffer.write(await file.read())
@@ -128,13 +133,20 @@ async def download_results():
     # Generate a CSV file with the scraped data
     csv_data = "URL,Keyword,H1 Count,H2 Count,Body Count\n"
     for file_name in os.listdir(TEMP_DIR):
-        with open(os.path.join(TEMP_DIR, file_name), "r") as file:
+        file_path = os.path.join(TEMP_DIR, file_name)
+        with open(file_path, "r") as file:
             csv_data += file.read()
 
+    # Create a temporary file to store the CSV data
+    temp_csv_file = tempfile.NamedTemporaryFile(delete=False)
+    temp_csv_file.write(csv_data.encode())
+    temp_csv_file.close()
+
     # Return the CSV file as a response
-    response = Response(content=csv_data, media_type="text/csv")
-    response.headers["Content-Disposition"] = "attachment; filename=results.csv"
-    return response
+    with open(temp_csv_file.name, "rb") as file:
+        response = Response(content=file.read(), media_type="text/csv")
+        response.headers["Content-Disposition"] = "attachment; filename=results.csv"
+        return response
 
 if __name__ == '__main__':
     import uvicorn
