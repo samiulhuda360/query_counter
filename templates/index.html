@@ -27,16 +27,19 @@
           background-color: #0056b3;
         }
       </style>
-    <script>
+      <script>
         document.addEventListener('DOMContentLoaded', function() {
             var form = document.querySelector('form');
             var table = document.querySelector('table tbody');
             var downloadButton = document.querySelector('#download-button');
+            var submitButton = document.querySelector('.submit-button');
             var eventSource = new EventSource('/gsc/scrape');
-
+        
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
                 var formData = new FormData(form);
+                submitButton.disabled = true; // Disable the submit button
+        
                 fetch('/gsc/upload', {
                     method: 'POST',
                     body: formData
@@ -47,9 +50,10 @@
                 })
                 .catch(function(error) {
                     console.error('Error:', error);
+                    submitButton.disabled = false; // Enable the submit button if an error occurs
                 });
             });
-
+        
             eventSource.addEventListener('result', function(event) {
                 console.log('Received result event');
                 var data = JSON.parse(event.data);
@@ -62,25 +66,27 @@
                     <td>${data.body_count}</td>
                 `;
             });
-
+        
             eventSource.addEventListener('complete', function(event) {
                 console.log('Received complete event');
                 downloadButton.classList.remove('hidden'); // Show the download button when processing is complete
+                submitButton.disabled = false; // Enable the submit button when processing is complete
             });
-
+        
             eventSource.addEventListener('ping', function(event) {
                 console.log('Received ping event');
             });
-
+        
             eventSource.addEventListener('error', function(event) {
                 console.error('EventSource error:', event);
+                submitButton.disabled = false; // Enable the submit button if an error occurs
             });
-
+        
             downloadButton.addEventListener('click', function() {
                 window.location.href = '/gsc/download';
             });
         });
-    </script>
+        </script>
 </head>
 <body>
     <div class="container">
