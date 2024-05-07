@@ -41,7 +41,7 @@ keywords = []
 def read_form(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.post("/upload")
+@app.post("/gsc/upload")
 async def upload_file(file: UploadFile = File(...)):
     # Save the uploaded file
     with open("uploaded_file.xlsx", "wb") as buffer:
@@ -119,7 +119,7 @@ async def scrape_endpoint():
 
     return EventSourceResponse(event_generator())
 
-@app.get("/download")
+@app.get("/gsc/download")
 async def download_results():
     # Check if results exist
     if not os.path.exists(TEMP_DIR):

@@ -13,12 +13,12 @@
             var form = document.querySelector('form');
             var table = document.querySelector('table tbody');
             var downloadButton = document.querySelector('#download-button');
-            var eventSource = new EventSource('/scrape');
+            var eventSource = new EventSource('/gsc/scrape');
 
             form.addEventListener('submit', function(event) {
                 event.preventDefault();
                 var formData = new FormData(form);
-                fetch('/upload', {
+                fetch('/gsc/upload', {
                     method: 'POST',
                     body: formData
                 })
@@ -58,7 +58,7 @@
             });
 
             downloadButton.addEventListener('click', function() {
-                window.location.href = '/download';
+                window.location.href = '/gsc/download';
             });
         });
     </script>
