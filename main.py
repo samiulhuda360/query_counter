@@ -41,7 +41,7 @@ keywords = []
 def read_form(request: Request):
     return templates.TemplateResponse("index.html", {"request": request})
 
-@app.post("/gsc/upload")
+@app.post("/upload")
 async def upload_file(file: UploadFile = File(...)):
     # Save the uploaded file
     with open("uploaded_file.xlsx", "wb") as buffer:
@@ -68,7 +68,7 @@ async def upload_file(file: UploadFile = File(...)):
 
     return {"message": "File uploaded and processing started"}
 
-@app.get("/gsc/scrape")
+@app.get("/scrape")
 async def scrape_endpoint():
     async def event_generator():
         global urls, keywords
@@ -119,7 +119,7 @@ async def scrape_endpoint():
 
     return EventSourceResponse(event_generator())
 
-@app.get("/gsc/download")
+@app.get("/download")
 async def download_results():
     # Check if results exist
     if not os.path.exists(TEMP_DIR):
